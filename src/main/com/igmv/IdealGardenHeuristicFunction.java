@@ -5,12 +5,13 @@ import main.com.igmv.search.HeuristicFunction;
 public class IdealGardenHeuristicFunction implements HeuristicFunction{
 
 	// If a variety is left then value should be significantly higher
-	public static int W1 = 2000;
+	public static int W1 = 600;
 	
 	
 	public static int W2 = 10;
 	public static int W3 = 100;
 	public static int W4 = 80;
+	public static int W5 = 500;
 	
 	/**
 	 * heuristic function is defined as follows
@@ -30,6 +31,10 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 	 * 4. value = W1*NumberOfVarieties + SUM for all vegetables( W2* actualShare *
 	 * desirabilityIndex - W3 * actualShare * differenceInRequiredExp) 
 	 * - W1,W2,W3 are weights
+	 * 
+	 * 1. We should also try to reduce the highest deviation.
+	 * 2. Try to give less weightage to number of variety and punish more for vegetables with higher required exp than 
+	 * 3. When a vegetable is not included its share should be distributed to other vegetables.
 	 */
 	@Override
 	public double getHeuristicValue(Object state) {
@@ -47,12 +52,15 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 		}
 
 		value -= W1 * numVarietyInGarden;
-
+		double highestDev = 0;
 		for (Vegetable veg : garden.getVegetables()) {
 			value -= (W2 * veg.getActualVegetableShare() * veg
 					.getDesirabilityIndex());
 			
 			value += W4 * veg.getDeviationInShare();
+			if (highestDev < veg.getDeviationInShare()) {
+				highestDev = veg.getDeviationInShare();
+			}
 			//value += W4 * veg.getPercentageDeviationInShare();
 			boolean nullifyDevPunishemnet = false;
 			for (Variety v : veg.getVarieties()) {
@@ -72,6 +80,7 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 			}
 		}
 
+		value += W5 * highestDev;
 		return value;
 	}
 

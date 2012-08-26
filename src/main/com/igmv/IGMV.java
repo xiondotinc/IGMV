@@ -1,16 +1,15 @@
 package main.com.igmv;
 import java.io.IOException;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.logging.Logger;
 
-import main.com.igmv.eightpuzzle.SearchAgent;
 import main.com.igmv.input.ExcelReader;
 import main.com.igmv.search.Problem;
 import main.com.igmv.search.Successor;
+import main.com.igmv.search.simulatedannealing.SearchAgent;
 import main.com.igmv.search.simulatedannealing.SimulatedAnnealingSearch;
 
 
