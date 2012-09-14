@@ -9,7 +9,11 @@ public class Vegetable implements Comparable<Vegetable> {
 	/**
 	 * (length of row planted with vegetable)/(sum of lengths of all rows)
 	 */
-	double desiredShare;
+	private double optimalQuantity;
+	
+	private double minQuantity;
+	
+	private double maxQuantity;
 	
 	/**
 	 * has values 1 to 10 – 10 is the most desired and 1 is at the bottom of the list
@@ -27,12 +31,14 @@ public class Vegetable implements Comparable<Vegetable> {
 	
 	private GardenSize size;
 	
-	public Vegetable(String name, double share, int index, boolean required, GardenSize size) {
+	public Vegetable(String name, double minQuantity, double optimalQuantity, double maxQuantity, int index, boolean required, GardenSize size) {
 		this.varieties = new HashSet<Variety>();
 		this.name = name;
 		this.requiredItem = required;
 		this.desirabilityIndex = index;
-		this.desiredShare = share;
+		this.minQuantity = minQuantity;
+		this.optimalQuantity = optimalQuantity;
+		this.maxQuantity = maxQuantity;
 		this.size = size;
 	}
 	
@@ -40,7 +46,9 @@ public class Vegetable implements Comparable<Vegetable> {
 		this.name = other.name;
 		this.requiredItem = other.requiredItem;
 		this.desirabilityIndex = other.desirabilityIndex;
-		this.desiredShare = other.desiredShare;
+		this.minQuantity = other.minQuantity;
+		this.optimalQuantity = other.optimalQuantity;
+		this.maxQuantity = other.maxQuantity;
 		this.size = other.size;
 		this.varieties = new HashSet<Variety>();
 		for (Variety v : other.varieties) {
@@ -48,13 +56,16 @@ public class Vegetable implements Comparable<Vegetable> {
 		}
 	}
 
-	public double getActualVegetableShare() {
-		double rowLength = 0;
+	public double getActualVegetableQuantity() {
+		int numQuantity = 0;
+		//double rowLength = 0;
 		for (Variety v : this.varieties) {
-			rowLength += v.getActualRowLength();
+			numQuantity += Math.round((100 * v.getActualRowLength() / v
+					.getMinimumRowLength()) / 100);
 		}
-		int totalRowLength = size.getLength() * size.getNumRows();
-		return 100 * (rowLength/totalRowLength);
+		//int totalRowLength = size.getLength() * size.getNumRows();
+		//return 100 * (rowLength/totalRowLength);
+		return numQuantity;
 	}
 	
 	@Override
@@ -77,8 +88,8 @@ public class Vegetable implements Comparable<Vegetable> {
 		return varieties;
 	}
 
-	public double getDesiredShare() {
-		return desiredShare;
+	public double getOptimalQuantity() {
+		return optimalQuantity;
 	}
 
 	public int getDesirabilityIndex() {
@@ -94,16 +105,17 @@ public class Vegetable implements Comparable<Vegetable> {
 	}
 
 	public double getDeviationInShare() {
-		return Math.abs(this.desiredShare - this.getActualVegetableShare());
+		return Math.abs(this.optimalQuantity * size.getNumPersons()
+				- this.getActualVegetableQuantity());
 	}
 
 	public double getPercentageDeviationInShare() {
-		return 100 * (Math.abs(this.desiredShare
-				- this.getActualVegetableShare()) / this.desiredShare);
+		return 100 * (Math.abs(this.optimalQuantity * size.getNumPersons()
+				- this.getActualVegetableQuantity()) / this.optimalQuantity);
 	}
 
 	public double getActualDeviationInShare() {
-		return this.getActualVegetableShare() - this.desiredShare;
+		return this.getActualVegetableQuantity() - this.optimalQuantity * size.getNumPersons();
 	}
 	
 	public void addVariety(Variety v) {
@@ -118,14 +130,14 @@ public class Vegetable implements Comparable<Vegetable> {
 
 		return "Name: " + this.name + "\n" + "Required: " + this.requiredItem
 				+ "\n" + "Desirability: " + this.desirabilityIndex + "\n"
-				+ "DesiredShare: " + this.desiredShare + "\n" 
-				+ "ActualShare: " + this.getActualVegetableShare() + "\n" +
+				+ "OptimalQuantity: " + this.optimalQuantity + "\n" 
+				+ "ActualShare: " + this.getActualVegetableQuantity() + "\n" +
 				"Varieties : " + s;
 	}
 	
 	public static void main(String[] args) {
-		Vegetable v1 = new Vegetable("Apple", 34, 10, true, new GardenSize(100,70));
-		Vegetable v2 = new Vegetable("apple", 32, 10, true, new GardenSize(70,100));
+		Vegetable v1 = new Vegetable("Apple", 34, 60, 90, 10, true, new GardenSize(100,70, 5));
+		Vegetable v2 = new Vegetable("apple", 32, 60, 90, 10, true, new GardenSize(70,100, 5));
 		System.err.println(v1.equals(v2));
 		System.err.println(v1.hashCode() + "  " + v2.hashCode());
 	}
@@ -152,4 +164,13 @@ public class Vegetable implements Comparable<Vegetable> {
 		}
 		return v;
 	}
+
+	public double getMinQuantity() {
+		return minQuantity;
+	}
+
+	public double getMaxQuantity() {
+		return maxQuantity;
+	}
+
 }

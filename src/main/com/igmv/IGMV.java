@@ -15,14 +15,15 @@ import main.com.igmv.search.simulatedannealing.SimulatedAnnealingSearch;
 
 public class IGMV {
 	private final static Logger LOGGER = Logger.getLogger(IGMV.class.getName()); 
-	private static String dataFile = "res/data.xls";
-	private static String gardenTypeFile = "res/garden type.xls";
+	private static String dataFile = "res/data new.xls";
+	private static String gardenTypeFile = "res/garden type new.xls";
 	
 	public static int userExp = 1;
 	public static double tolerance = 0.00001;
 	
+	
 	public static void main(String[] args) throws IOException {
-		GardenSize size = new GardenSize(10,10);
+		GardenSize size = new GardenSize(10,10, 5);
 		
 		// Read the type of the garden user wants.
 		GardenType type = ExcelReader.readGardenType(gardenTypeFile, size);
@@ -41,7 +42,7 @@ public class IGMV {
 				}
 			}
 		}
-		//System.out.println("The Garden type is : \n" + type + " total veg " + type.getVegetables().size());
+		System.out.println("The Garden type is : \n" + type + " total veg " + type.getVegetables().size());
 
 		// Create the first garden by populating varieties with more than minimum
 		// row length required
@@ -55,7 +56,7 @@ public class IGMV {
 				+ new IdealGardenHeuristicFunction()
 						.getHeuristicValue(initialPlan));
 		
-//		GardenPlanGoalTest goalTest = new GardenPlanGoalTest(type, userExp);
+		GardenPlanGoalTest goalTest = new GardenPlanGoalTest(type, userExp);
 		//System.out.println(goalTest.isGoalState(initialPlan));
 		
 		GardenPlanSuccessorFunction f = new GardenPlanSuccessorFunction();

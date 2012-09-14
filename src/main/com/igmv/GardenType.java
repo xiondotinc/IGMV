@@ -11,14 +11,14 @@ public class GardenType {
 	}
 	
 	public void addVegetable(Vegetable veg) {
-		double totalShare = 0;
-		for (Vegetable v : this.getVegetables()) {
-			totalShare += v.desiredShare;
-		}
-		if (totalShare + veg.desiredShare > 100) {
-			throw new IllegalStateException(
-					"Can't add more than 100 share of vegetables");
-		}
+//		double totalShare = 0;
+//		for (Vegetable v : this.getVegetables()) {
+//			totalShare += v.optimalQuantity;
+//		}
+//		if (totalShare + veg.optimalQuantity > 100) {
+//			throw new IllegalStateException(
+//					"Can't add more than 100 share of vegetables");
+//		}
 		this.getVegetables().add(veg);
 	}
 	

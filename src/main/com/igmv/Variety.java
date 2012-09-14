@@ -21,15 +21,30 @@ public class Variety {
 	 */
 	private double minimumRowLength;
 	
+	private boolean lengthCrucial;
+	private double unitLength;
+	private double unitArea;
+	
 	private double actualRowLength;
 	
+	private int actualUnit;
+	
 	private GardenSize size;
-	public Variety(String name, String veg, int minExp, double rowLength, GardenSize size) {
+
+	public Variety(String name, String veg, int minExp, boolean lengthCrucial,
+			double unitLength, double unitArea, GardenSize size) {
 		this.varietyName = name;
 		this.vegName = veg;
-		this.minimumRowLength = rowLength;
+		this.lengthCrucial = lengthCrucial;
+		this.unitArea = unitArea;
+		this.unitLength = unitLength;
 		this.requiredExp = minExp;
 		this.size = size;
+		if (lengthCrucial) {
+			this.minimumRowLength = unitLength;
+		} else {
+			this.minimumRowLength = unitArea / size.getRowWidth();
+		}
 	}
 
 	public Variety(Variety other) {
@@ -38,6 +53,10 @@ public class Variety {
 		this.minimumRowLength = other.minimumRowLength;
 		this.requiredExp = other.requiredExp;
 		this.actualRowLength = other.actualRowLength;
+		this.actualUnit = other.actualUnit;
+		this.lengthCrucial = other.lengthCrucial;
+		this.unitLength = other.unitLength;
+		this.unitArea = other.unitArea;
 		this.size = other.size;
 	}
 	

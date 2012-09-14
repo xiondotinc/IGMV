@@ -34,10 +34,19 @@ public class ExcelReader {
 				}
 				String name = sheet.getCell(1, i).getContents();
 				int minExp = Integer.valueOf(sheet.getCell(2, i).getContents());
-				double rowLength = (Double.valueOf(sheet.getCell(3, i)
-						.getContents()) ) ;
-
-				varieties.add(new Variety(name, group, minExp, rowLength, size));
+				String lengthCrucial = sheet.getCell(3, i).getContents();
+				if (lengthCrucial.equalsIgnoreCase("TRUE")) {
+					double unitLength = (Double.valueOf(sheet.getCell(4, i)
+							.getContents()));
+					varieties.add(new Variety(name, group, minExp, true,
+							unitLength, -1, size));
+				} else {
+					double unitArea = (Double.valueOf(sheet.getCell(5, i)
+							.getContents()));
+					varieties.add(new Variety(name, group, minExp, false, -1,
+							unitArea, size));
+				}
+				
 			}
 
 		} catch (BiffException e) {
@@ -55,7 +64,7 @@ public class ExcelReader {
 		try {
 			w = Workbook.getWorkbook(inputWorkbook);
 			// Get the first sheet
-			Sheet sheet = w.getSheet(1);
+			Sheet sheet = w.getSheet(0);
 			// 0th row has column name
 			// e.g Vegetable, Variety, Min.Experience, Min. row length
 			for (int i = 5; i < sheet.getRows(); i++) {
@@ -66,10 +75,13 @@ public class ExcelReader {
 				boolean required = sheet.getCell(2, i).getContents()
 						.equalsIgnoreCase("YES") ? true : false;
 				int index = Integer.valueOf(sheet.getCell(3, i).getContents());
-				double weight = Double.valueOf(sheet.getCell(4, i)
+				double minQuantity = Double.valueOf(sheet.getCell(4, i)
 						.getContents());
-
-				type.addVegetable(new Vegetable(vegName, weight, index,
+				double optimumQuantity = Double.valueOf(sheet.getCell(5, i)
+						.getContents());
+				double maxQuantity = Double.valueOf(sheet.getCell(6, i)
+						.getContents());
+				type.addVegetable(new Vegetable(vegName, minQuantity, optimumQuantity, maxQuantity, index,
 						required, size));
 			}
 
@@ -87,7 +99,7 @@ public class ExcelReader {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		Set<Variety> varieties = ExcelReader.readData("res/data.xls", new GardenSize(10,10));
+		Set<Variety> varieties = ExcelReader.readData("res/data.xls", new GardenSize(10,10, 5));
 		System.out.println("The total number of varieties read are "
 				+ varieties.size());
 	}

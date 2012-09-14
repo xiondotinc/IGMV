@@ -54,7 +54,7 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 		value -= W1 * numVarietyInGarden;
 		double highestDev = 0;
 		for (Vegetable veg : garden.getVegetables()) {
-			value -= (W2 * veg.getActualVegetableShare() * veg
+			value -= (W2 * veg.getActualVegetableQuantity() * veg
 					.getDesirabilityIndex());
 			
 			value += W4 * veg.getDeviationInShare();

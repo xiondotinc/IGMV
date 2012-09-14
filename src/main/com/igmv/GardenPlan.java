@@ -15,7 +15,9 @@ public class GardenPlan {
 		this.userExp = exp;
 		this.vegetables = vegetables;
 
-		double totalRowLength = size.getTotalRowLength();		
+		double totalRowLength = size.getTotalRowLength();	
+		
+		int numPerson = size.getNumPersons();
 		/**
 		 * Get all the required vegetables.
 		 */
@@ -30,8 +32,10 @@ public class GardenPlan {
 		// Calculate the minimum row length required to grow required vegetables.		
 		double minRowLength = 0;
 		for (Vegetable veg : requiredVegs) {
-			minRowLength += veg.getVarietyWithMinRowLength()
-					.getMinimumRowLength();
+			double minLength = veg.getVarietyWithMinRowLength()
+			.getMinimumRowLength() * numPerson * veg.getMinQuantity();
+			System.out.println("For veg: " + veg.getName() + " required is " + minLength);
+			minRowLength += minLength; 
 		}
 		System.out.println("total " + totalRowLength + " min " + minRowLength);
 		if (minRowLength > totalRowLength) {
@@ -44,8 +48,10 @@ public class GardenPlan {
 		double leftRowLength = totalRowLength;
 		for (Vegetable veg : requiredVegs) {
 			Variety var = veg.getVarietyWithMinRowLength();
-			addRowLengthToVariety(var, var.getMinimumRowLength());
-			leftRowLength -= var.getMinimumRowLength();
+			double minLength = var.getMinimumRowLength() * numPerson
+					* veg.getMinQuantity();
+			addRowLengthToVariety(var, minLength);
+			leftRowLength -= minLength;
 		}
 		// now allocate leftRowLength to vegetables/variety
 		boolean added = false;
@@ -127,8 +133,10 @@ public class GardenPlan {
 		for (Vegetable veg : this.vegetables) {
 			buf.append("\nVeg : " + veg.getName() + "\n" +
 					" Required: " + veg.isRequiredItem() + "\n" +
-					" DesiredShare: " + veg.getDesiredShare() + "\n" +
-					" ActualShare: " + veg.getActualVegetableShare() + "\n");
+					" MinQuantity: " + veg.getMinQuantity() + "\n" +
+					" OptimalQuantity: " + veg.getOptimalQuantity() + "\n" +
+					" MaxQuantity: " + veg.getMaxQuantity() + "\n" +
+					" ActualQuantity: " + veg.getActualVegetableQuantity() + "\n");
 			for (Variety var : veg.getVarieties()) {
 				buf.append("\t Variety : " + var.getVarietyName() + "\n"
 						+ "\t MinimumRowLengthRequired :" + var.getMinimumRowLength() + "\n" +
@@ -149,7 +157,7 @@ public class GardenPlan {
 			}
 		}
 		for (Vegetable veg : requiredVegs) {
-			if (veg.getActualVegetableShare() <= 0) {
+			if (veg.getActualVegetableQuantity() <= 0) {
 				return false;
 			}
 		}
@@ -162,9 +170,9 @@ public class GardenPlan {
 			}
 		}
 		
-		if (size.getTotalRowLength() != actualRowLength) {
+		if (size.getTotalRowLength() != Math.round((actualRowLength * 100)/100)) {
 			System.out.println("Total Row lenght " + size.getTotalRowLength()
-					+ "actual allocated " + actualRowLength);
+					+ "actual allocated " + Math.round(actualRowLength * 100)/100);
 			return false;
 		}
 		
