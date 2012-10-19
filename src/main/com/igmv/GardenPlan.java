@@ -8,9 +8,9 @@ public class GardenPlan {
 	private double minRowlengthToSwap = 0.25;
 	
 	private final GardenSize size;
-	private Set<Vegetable> vegetables;
+	private Set<IGMVVegetable> vegetables;
 	
-	public GardenPlan(int exp, GardenSize size, Set<Vegetable> vegetables) {
+	public GardenPlan(int exp, GardenSize size, Set<IGMVVegetable> vegetables) {
 		this.size = size;
 		this.userExp = exp;
 		this.vegetables = vegetables;
@@ -21,8 +21,8 @@ public class GardenPlan {
 		/**
 		 * Get all the required vegetables.
 		 */
-		Set<Vegetable> requiredVegs = new HashSet<Vegetable>();
-		for (Vegetable veg : this.vegetables) {
+		Set<IGMVVegetable> requiredVegs = new HashSet<IGMVVegetable>();
+		for (IGMVVegetable veg : this.vegetables) {
 			if (veg.isRequiredItem()) {
 				requiredVegs.add(veg);
 			}
@@ -31,7 +31,7 @@ public class GardenPlan {
 
 		// Calculate the minimum row length required to grow required vegetables.		
 		double minRowLength = 0;
-		for (Vegetable veg : requiredVegs) {
+		for (IGMVVegetable veg : requiredVegs) {
 			double minLength = veg.getVarietyWithMinRowLength()
 			.getMinimumRowLength() * numPerson * veg.getMinQuantity();
 			System.out.println("For veg: " + veg.getName() + " required is " + minLength);
@@ -46,8 +46,8 @@ public class GardenPlan {
 		}
 		// First allocate least minimum required to grow required vegetables.
 		double leftRowLength = totalRowLength;
-		for (Vegetable veg : requiredVegs) {
-			Variety var = veg.getVarietyWithMinRowLength();
+		for (IGMVVegetable veg : requiredVegs) {
+			IGMVVariety var = veg.getVarietyWithMinRowLength();
 			double minLength = var.getMinimumRowLength() * numPerson
 					* veg.getMinQuantity();
 			addRowLengthToVariety(var, minLength);
@@ -57,8 +57,8 @@ public class GardenPlan {
 		boolean added = false;
 		while (leftRowLength > 0 && !added) {
 			added = true;
-			for (Vegetable veg : this.vegetables) {
-				for (Variety var : veg.getVarieties()) {
+			for (IGMVVegetable veg : this.vegetables) {
+				for (IGMVVariety var : veg.getVarieties()) {
 					if (leftRowLength > var.getMinimumRowLength()) {
 						added = false;
 						addRowLengthToVariety(var, var.getMinimumRowLength());
@@ -69,8 +69,8 @@ public class GardenPlan {
 		}
 		
 		if(leftRowLength > 0) {
-			for (Vegetable veg : this.vegetables) {
-				for (Variety var : veg.getVarieties()) {
+			for (IGMVVegetable veg : this.vegetables) {
+				for (IGMVVariety var : veg.getVarieties()) {
 					if(var.getActualRowLength() > 0) {
 						addRowLengthToVariety(var, leftRowLength);
 						leftRowLength = 0;
@@ -87,14 +87,14 @@ public class GardenPlan {
 		this.userExp = other.userExp;
 		this.minRowlengthToSwap = other.minRowlengthToSwap;
 		this.size = other.size;
-		this.vegetables = new HashSet<Vegetable>();
+		this.vegetables = new HashSet<IGMVVegetable>();
 		
-		for (Vegetable veg : other.vegetables) {
-			this.vegetables.add(new Vegetable(veg));
+		for (IGMVVegetable veg : other.vegetables) {
+			this.vegetables.add(new IGMVVegetable(veg));
 		}
 	}
 	
-	public Set<Vegetable> getVegetables() {
+	public Set<IGMVVegetable> getVegetables() {
 		return this.vegetables;
 	}
 
@@ -118,11 +118,11 @@ public class GardenPlan {
 		return size;
 	}
 	
-	public static void addRowLengthToVariety(Variety var, double rowLength) {
+	public static void addRowLengthToVariety(IGMVVariety var, double rowLength) {
 		double currentRowLength = var.getActualRowLength();
 		var.setActualRowLength(currentRowLength + rowLength);
 	}
-	public static void subRowLengthToVariety(Variety var, double rowLength) {
+	public static void subRowLengthToVariety(IGMVVariety var, double rowLength) {
 		double currentRowLength = var.getActualRowLength();
 		var.setActualRowLength(currentRowLength - rowLength);
 	}
@@ -130,14 +130,14 @@ public class GardenPlan {
 	@Override
 	public String toString() {
 		StringBuffer buf = new StringBuffer();
-		for (Vegetable veg : this.vegetables) {
+		for (IGMVVegetable veg : this.vegetables) {
 			buf.append("\nVeg : " + veg.getName() + "\n" +
 					" Required: " + veg.isRequiredItem() + "\n" +
 					" MinQuantity: " + veg.getMinQuantity() + "\n" +
 					" OptimalQuantity: " + veg.getOptimalQuantity() + "\n" +
 					" MaxQuantity: " + veg.getMaxQuantity() + "\n" +
 					" ActualQuantity: " + veg.getActualVegetableQuantity() + "\n");
-			for (Variety var : veg.getVarieties()) {
+			for (IGMVVariety var : veg.getVarieties()) {
 				buf.append("\t Variety : " + var.getVarietyName() + "\n"
 						+ "\t MinimumRowLengthRequired :" + var.getMinimumRowLength() + "\n" +
 						 "\t Min Exp :" + var.getRequiredExp() + "\n"+
@@ -150,13 +150,13 @@ public class GardenPlan {
 	}
 
 	public boolean isValid() {
-		Set<Vegetable> requiredVegs = new HashSet<Vegetable>();
-		for (Vegetable veg : this.vegetables) {
+		Set<IGMVVegetable> requiredVegs = new HashSet<IGMVVegetable>();
+		for (IGMVVegetable veg : this.vegetables) {
 			if (veg.isRequiredItem()) {
 				requiredVegs.add(veg);
 			}
 		}
-		for (Vegetable veg : requiredVegs) {
+		for (IGMVVegetable veg : requiredVegs) {
 			if (veg.getActualVegetableQuantity() <= 0) {
 				return false;
 			}
@@ -164,8 +164,8 @@ public class GardenPlan {
 		
 		double actualRowLength = 0;
 		
-		for(Vegetable veg:this.vegetables) {
-			for(Variety var: veg.getVarieties()) {
+		for(IGMVVegetable veg:this.vegetables) {
+			for(IGMVVariety var: veg.getVarieties()) {
 				actualRowLength += var.getActualRowLength();
 			}
 		}
@@ -179,10 +179,10 @@ public class GardenPlan {
 		return true;
 	}
 
-	public Set<Variety> getVarieties() {
-		Set<Variety> varieties = new HashSet<Variety>();
+	public Set<IGMVVariety> getVarieties() {
+		Set<IGMVVariety> varieties = new HashSet<IGMVVariety>();
 
-		for (Vegetable veg : this.vegetables) {
+		for (IGMVVegetable veg : this.vegetables) {
 			varieties.addAll(veg.getVarieties());
 		}
 		return varieties;
@@ -190,12 +190,12 @@ public class GardenPlan {
 	
 	private void calculateMinSwapLength() {
 		
-		Set<Variety> varieties = new HashSet<Variety>();
-		for (Vegetable veg : this.vegetables) {
+		Set<IGMVVariety> varieties = new HashSet<IGMVVariety>();
+		for (IGMVVegetable veg : this.vegetables) {
 			varieties.addAll(veg.getVarieties());
 		}
 		// Calculate the unit of swap
-		for (Variety v : varieties) {
+		for (IGMVVariety v : varieties) {
 			if (getMinRowlengthToSwap() > v.getMinimumRowLength()) {
 				setMinRowlengthToSwap(v.getMinimumRowLength());
 			}

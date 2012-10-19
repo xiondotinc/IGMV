@@ -25,7 +25,7 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 //		System.out.println("The old plan is " + state);
 //		System.out.println("The new plan is " + newPlan);
 		
-		List<Vegetable> l = new ArrayList<Vegetable>();
+		List<IGMVVegetable> l = new ArrayList<IGMVVegetable>();
 		l.addAll(newPlan.getVegetables());
 		Collections.sort(l);
 		//System.out.println(" The sorted list of vegetable is : " + l  + " total size " + l.size() + " \n");
@@ -60,14 +60,14 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 	 */
 	
 	
-	private String swapVegetables(List<Vegetable> vegList, double minRowLength) {
+	private String swapVegetables(List<IGMVVegetable> vegList, double minRowLength) {
 
-		List<Variety> varieties = new ArrayList<Variety>();
-		for (Vegetable veg : vegList) {
+		List<IGMVVariety> varieties = new ArrayList<IGMVVariety>();
+		for (IGMVVegetable veg : vegList) {
 			varieties.addAll(veg.getVarieties());
 		}
 		Collections.shuffle(varieties);
-		for (Variety varietyTo : varieties) {
+		for (IGMVVariety varietyTo : varieties) {
 			Set<SwapUnit> unitsFrom = new HashSet<SwapUnit>();
 			
 			if (varietyTo.getActualRowLength() == 0) {
@@ -106,7 +106,7 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 		
 	}
 	
-	private void doSwapping(Variety varietyTo, Set<SwapUnit> unitsFrom) {
+	private void doSwapping(IGMVVariety varietyTo, Set<SwapUnit> unitsFrom) {
 		for (SwapUnit unit : unitsFrom) {
 			GardenPlan.subRowLengthToVariety(unit.var, unit.length);
 			GardenPlan.addRowLengthToVariety(varietyTo, unit.length);
@@ -128,17 +128,17 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 	 * @param minRowLength
 	 * @return
 	 */
-	private SwapUnit findVarietyToSwapFrom(List<Variety> varieties,
+	private SwapUnit findVarietyToSwapFrom(List<IGMVVariety> varieties,
 			double minRowLength) {
-		List<Variety> temp = new ArrayList<Variety>();
-		for (Variety v : varieties) {
+		List<IGMVVariety> temp = new ArrayList<IGMVVariety>();
+		for (IGMVVariety v : varieties) {
 			if (v.getActualRowLength() > 0)
 				temp.add(v);
 		}
 		Collections.shuffle(temp);
 		SwapUnit unit = null;
 
-		for (Variety v : temp) {
+		for (IGMVVariety v : temp) {
 			if (v.getActualRowLength() - minRowLength < v.getMinimumRowLength()
 					&& ((v.getActualRowLength() - minRowLength) > 0)) {
 				if (v.getActualRowLength() - v.getMinimumRowLength() < v
@@ -159,10 +159,10 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 
 	
 	class SwapUnit {
-		private Variety var;
+		private IGMVVariety var;
 		private double length;
 		
-		public SwapUnit(Variety var, double length) {
+		public SwapUnit(IGMVVariety var, double length) {
 			this.var = var;
 			this.length = length;
 		}
@@ -173,13 +173,13 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 		}
 	}
 	
-	private String swapVegetablesOld(List<Vegetable> vegList, double minRowLength) {
+	private String swapVegetablesOld(List<IGMVVegetable> vegList, double minRowLength) {
 		
 		boolean swapped = false;
-		Vegetable swapFrom = null, swapTo = null;
+		IGMVVegetable swapFrom = null, swapTo = null;
 		while (!swapped) {
 			double totalPositiveDeviation = 0, totalNegativeDeviation = 0;
-			for (Vegetable v : vegList) {
+			for (IGMVVegetable v : vegList) {
 				if (v.getActualDeviationInShare() > 0) {
 					totalPositiveDeviation += v.getActualDeviationInShare();
 				}
@@ -207,7 +207,7 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 			double random = r.nextDouble() * totalPositiveDeviation;
 			totalPositiveDeviation = 0;
 			
-			for (Vegetable v : vegList) {
+			for (IGMVVegetable v : vegList) {
 				if (v.getActualDeviationInShare() > 0) {
 					totalPositiveDeviation += v.getActualDeviationInShare();
 					if (totalPositiveDeviation > random) {
@@ -220,7 +220,7 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 			random = r.nextDouble() * totalNegativeDeviation;
 			totalNegativeDeviation = 0;
 			Collections.reverse(vegList);
-			for (Vegetable v : vegList) {
+			for (IGMVVegetable v : vegList) {
 				if (v.getActualDeviationInShare() < 0) {
 					totalNegativeDeviation += v.getActualDeviationInShare();
 					if (totalNegativeDeviation < random) {
@@ -237,8 +237,8 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 
 			boolean swapFromSuccessful = false;
 
-			for (Vegetable veg : vegList) {
-				for (Variety v : veg.getVarieties()) {
+			for (IGMVVegetable veg : vegList) {
+				for (IGMVVariety v : veg.getVarieties()) {
 					if (swapFrom.getVarieties().contains(v)
 							&& (v.getActualRowLength() > v.getMinimumRowLength())
 							&& ((v.getActualRowLength() - minRowLength) > v
@@ -251,8 +251,8 @@ public class GardenPlanSuccessorFunction implements SuccessorFunction {
 			}
 
 			if (swapFromSuccessful) {
-				for (Vegetable veg : vegList) {
-					for (Variety v : veg.getVarieties()) {
+				for (IGMVVegetable veg : vegList) {
+					for (IGMVVariety v : veg.getVarieties()) {
 						if (swapTo.getVarieties().contains(v)) {
 							GardenPlan.addRowLengthToVariety(v, minRowLength);
 							swapped = true;

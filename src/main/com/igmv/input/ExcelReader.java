@@ -6,9 +6,9 @@ import java.util.HashSet;
 import java.util.Set;
 
 import main.com.igmv.GardenSize;
-import main.com.igmv.GardenType;
-import main.com.igmv.Variety;
-import main.com.igmv.Vegetable;
+import main.com.igmv.IGMVGardenType;
+import main.com.igmv.IGMVVariety;
+import main.com.igmv.IGMVVegetable;
 
 import jxl.Sheet;
 import jxl.Workbook;
@@ -17,10 +17,10 @@ import jxl.read.biff.BiffException;
 
 public class ExcelReader {
 
-	public static Set<Variety> readData(String inputFile, GardenSize size) throws IOException {
+	public static Set<IGMVVariety> readData(String inputFile, GardenSize size) throws IOException {
 		File inputWorkbook = new File(inputFile);
 		Workbook w;
-		Set<Variety> varieties = new HashSet<Variety>();
+		Set<IGMVVariety> varieties = new HashSet<IGMVVariety>();
 		try {
 			w = Workbook.getWorkbook(inputWorkbook);
 			// Get the first sheet
@@ -38,12 +38,12 @@ public class ExcelReader {
 				if (lengthCrucial.equalsIgnoreCase("TRUE")) {
 					double unitLength = (Double.valueOf(sheet.getCell(4, i)
 							.getContents()));
-					varieties.add(new Variety(name, group, minExp, true,
+					varieties.add(new IGMVVariety(name, group, minExp, true,
 							unitLength, -1, size));
 				} else {
 					double unitArea = (Double.valueOf(sheet.getCell(5, i)
 							.getContents()));
-					varieties.add(new Variety(name, group, minExp, false, -1,
+					varieties.add(new IGMVVariety(name, group, minExp, false, -1,
 							unitArea, size));
 				}
 				
@@ -56,9 +56,9 @@ public class ExcelReader {
 		return varieties;
 	}
 
-	public static GardenType readGardenType(String gardenTypeFile, GardenSize size)
+	public static IGMVGardenType readGardenType(String gardenTypeFile, GardenSize size)
 			throws IOException {
-		GardenType type = new GardenType();
+		IGMVGardenType type = new IGMVGardenType();
 		File inputWorkbook = new File(gardenTypeFile);
 		Workbook w;
 		try {
@@ -81,7 +81,7 @@ public class ExcelReader {
 						.getContents());
 				double maxQuantity = Double.valueOf(sheet.getCell(6, i)
 						.getContents());
-				type.addVegetable(new Vegetable(vegName, minQuantity, optimumQuantity, maxQuantity, index,
+				type.addVegetable(new IGMVVegetable(vegName, minQuantity, optimumQuantity, maxQuantity, index,
 						required, size));
 			}
 
@@ -99,7 +99,7 @@ public class ExcelReader {
 	 * @throws IOException
 	 */
 	public static void main(String[] args) throws IOException {
-		Set<Variety> varieties = ExcelReader.readData("res/data.xls", new GardenSize(10,10, 5));
+		Set<IGMVVariety> varieties = ExcelReader.readData("res/data.xls", new GardenSize(10,10, 5));
 		System.out.println("The total number of varieties read are "
 				+ varieties.size());
 	}

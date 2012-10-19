@@ -1,10 +1,18 @@
 package main.com.igmv;
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import junit.runner.Version;
 
 import main.com.igmv.input.ExcelReader;
 import main.com.igmv.search.Problem;
@@ -22,28 +30,29 @@ public class IGMV {
 	public static double tolerance = 0.00001;
 	
 	
-	public static void main(String[] args) throws IOException {
+	public static void main(String[] args) throws IOException {	
 		GardenSize size = new GardenSize(10,10, 5);
 		
 		// Read the type of the garden user wants.
-		GardenType type = ExcelReader.readGardenType(gardenTypeFile, size);
+		IGMVGardenType type = ExcelReader.readGardenType(gardenTypeFile, size);
 		// Read the data from the data file. It contains information
 		// about the variety.
-		Set<Variety> varieties = ExcelReader.readData(dataFile, size);
+		Set<IGMVVariety> varieties = ExcelReader.readData(dataFile, size);
 		
+		writeToDataBase(type, varieties);
 		// Populate all the vegetables in the type with the data.
 		// the data will be what all varieties are available
 		// and for each of the variety minimum row length,
 		// required experience etc.
-		for (Vegetable veg : type.getVegetables()) {
-			for (Variety v : varieties) {
+		for (IGMVVegetable veg : type.getVegetables()) {
+			for (IGMVVariety v : varieties) {
 				if (v.getVegetableName().equals(veg.getName())) {
 					veg.addVariety(v);
 				}
 			}
 		}
 		System.out.println("The Garden type is : \n" + type + " total veg " + type.getVegetables().size());
-
+		System.exit(0);
 		// Create the first garden by populating varieties with more than minimum
 		// row length required
 		// It should have all the vegetables from the plan which have required=true
@@ -92,6 +101,54 @@ public class IGMV {
 		}
 		
 		
+	}
+
+	private static void writeToDataBase(IGMVGardenType type, Set<IGMVVariety> varieties) {
+
+		String url = "jdbc:postgresql://localhost/puf-web";
+        String user = "puf-web";
+        String password = "puf-web";
+
+        Connection con = null;
+        Statement st = null;
+        ResultSet rs = null;
+        
+        try {
+            con = DriverManager.getConnection(url, user, password);
+            st = con.createStatement();
+            //String query = "SELECT * FROM GARDEN_TYPE_VEGETABLES";
+            String query = "INSERT INTO VEGETABLES ";
+            
+			for (IGMVVegetable veg : type.getVegetables()) {
+				query += "(id, name, dept, age, salary location)";
+			}
+			
+			rs = st.executeQuery(query);
+            if (rs.next()) {
+                System.out.println(rs.getString(1));
+            }
+
+        } catch (SQLException ex) {
+            Logger lgr = Logger.getLogger(Version.class.getName());
+            lgr.log(Level.SEVERE, ex.getMessage(), ex);
+
+        } finally {
+            try {
+                if (rs != null) {
+                    rs.close();
+                }
+                if (st != null) {
+                    st.close();
+                }
+                if (con != null) {
+                    con.close();
+                }
+
+            } catch (SQLException ex) {
+                Logger lgr = Logger.getLogger(Version.class.getName());
+                lgr.log(Level.WARNING, ex.getMessage(), ex);
+            }
+        }
 	}
 
 	private static void printActions(List actions) {

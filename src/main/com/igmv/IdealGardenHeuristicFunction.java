@@ -45,7 +45,7 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 		}
 		double value = 0;
 		int numVarietyInGarden = 0;
-		for (Variety var : garden.getVarieties()) {
+		for (IGMVVariety var : garden.getVarieties()) {
 			if (var.getActualRowLength() > 0) {
 				numVarietyInGarden++;
 			}
@@ -53,7 +53,7 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 
 		value -= W1 * numVarietyInGarden;
 		double highestDev = 0;
-		for (Vegetable veg : garden.getVegetables()) {
+		for (IGMVVegetable veg : garden.getVegetables()) {
 			value -= (W2 * veg.getActualVegetableQuantity() * veg
 					.getDesirabilityIndex());
 			
@@ -63,7 +63,7 @@ public class IdealGardenHeuristicFunction implements HeuristicFunction{
 			}
 			//value += W4 * veg.getPercentageDeviationInShare();
 			boolean nullifyDevPunishemnet = false;
-			for (Variety v : veg.getVarieties()) {
+			for (IGMVVariety v : veg.getVarieties()) {
 				
 				if (v.getActualRowLength() > 0
 						&& (v.getRequiredExp() > garden.getUserExp())) {

@@ -4,11 +4,11 @@ import main.com.igmv.search.GoalTest;
 
 public class GardenPlanGoalTest implements GoalTest {
 
-	private GardenType idealType;
+	private IGMVGardenType idealType;
 
 	private int userExp;
 
-	public GardenPlanGoalTest(GardenType type, int exp) {
+	public GardenPlanGoalTest(IGMVGardenType type, int exp) {
 		this.idealType = type;
 		this.userExp = exp;
 	}
